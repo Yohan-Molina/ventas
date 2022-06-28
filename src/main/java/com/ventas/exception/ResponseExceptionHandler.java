@@ -3,6 +3,8 @@ package com.ventas.exception;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(ResponseExceptionHandler.class);
+
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ExceptionResponse> manejarTodasExcepciones(Exception e) {
 
@@ -32,21 +36,28 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        logger.trace("Este es un mensaje de rastreo.");
+        logger.debug("Este es un mensaje de depuración.");
+        logger.info("Este es un mensaje de información.");
+        logger.warn("Este es un mensaje de advertencia.");
+        logger.error("Este es un mensaje de error.");
+
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fielName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fielName, errorMessage);
         });
-        
+
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 new Date(),
                 "Ocurrió un error",
                 ex.getMessage(),
                 errors
         );
-        
+
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
-    
+
 }
