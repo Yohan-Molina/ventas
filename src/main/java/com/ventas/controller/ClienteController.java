@@ -3,6 +3,7 @@ package com.ventas.controller;
 import com.ventas.model.Cliente;
 import com.ventas.service.ClienteService;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +36,12 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) {
         return new ResponseEntity<>(clienteService.createCliente(cliente), HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<Cliente> updateCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> updateCliente(@Valid @RequestBody Cliente cliente) {
         return clienteService.findClienteById(cliente.getIdCliente())
                 .map(c -> ResponseEntity.ok(clienteService.updateCliente(cliente)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
